@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="org.jclouds_jclouds-loadbalancer_1.2.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.jclouds/jclouds-loadbalancer/bundles/jclouds-loadbalancer-1.2.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.jclouds/jclouds-loadbalancer/docs/jclouds-loadbalancer-1.2.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.jclouds/jclouds-loadbalancer/srcs/jclouds-loadbalancer-1.2.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="org.jclouds.provider_cloudfiles-us_1.2.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.jclouds.provider/cloudfiles-us/bundles/cloudfiles-us-1.2.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.jclouds.provider/cloudfiles-us/docs/cloudfiles-us-1.2.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.jclouds.provider/cloudfiles-us/srcs/cloudfiles-us-1.2.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

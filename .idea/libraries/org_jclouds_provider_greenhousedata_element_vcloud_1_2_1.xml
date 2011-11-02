@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="org.jclouds.provider_greenhousedata-element-vcloud_1.2.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.jclouds.provider/greenhousedata-element-vcloud/bundles/greenhousedata-element-vcloud-1.2.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.jclouds.provider/greenhousedata-element-vcloud/docs/greenhousedata-element-vcloud-1.2.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.jclouds.provider/greenhousedata-element-vcloud/srcs/greenhousedata-element-vcloud-1.2.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

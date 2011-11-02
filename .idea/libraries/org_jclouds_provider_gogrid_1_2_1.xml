@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="org.jclouds.provider_gogrid_1.2.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.jclouds.provider/gogrid/bundles/gogrid-1.2.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.jclouds.provider/gogrid/docs/gogrid-1.2.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.jclouds.provider/gogrid/srcs/gogrid-1.2.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

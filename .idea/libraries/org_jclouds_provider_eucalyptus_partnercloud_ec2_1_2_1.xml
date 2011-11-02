@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="org.jclouds.provider_eucalyptus-partnercloud-ec2_1.2.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.jclouds.provider/eucalyptus-partnercloud-ec2/bundles/eucalyptus-partnercloud-ec2-1.2.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.jclouds.provider/eucalyptus-partnercloud-ec2/docs/eucalyptus-partnercloud-ec2-1.2.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.jclouds.provider/eucalyptus-partnercloud-ec2/srcs/eucalyptus-partnercloud-ec2-1.2.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

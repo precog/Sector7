@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="org.jclouds.provider_stratogen-vcloud-mycloud_1.1.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.jclouds.provider/stratogen-vcloud-mycloud/bundles/stratogen-vcloud-mycloud-1.1.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.jclouds.provider/stratogen-vcloud-mycloud/docs/stratogen-vcloud-mycloud-1.1.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.jclouds.provider/stratogen-vcloud-mycloud/srcs/stratogen-vcloud-mycloud-1.1.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

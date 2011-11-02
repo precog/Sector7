@@ -1,0 +1,6 @@
+*~
+target/
+
+# Ignore IDEA user-specific files
+workspace.xml
+tasks.xml

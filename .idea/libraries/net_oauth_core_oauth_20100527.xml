@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="net.oauth.core_oauth_20100527">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/net.oauth.core/oauth/jars/oauth-20100527.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/net.oauth.core/oauth/docs/oauth-20100527-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/net.oauth.core/oauth/srcs/oauth-20100527-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

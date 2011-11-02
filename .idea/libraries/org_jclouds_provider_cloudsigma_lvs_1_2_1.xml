@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="org.jclouds.provider_cloudsigma-lvs_1.2.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.jclouds.provider/cloudsigma-lvs/bundles/cloudsigma-lvs-1.2.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.jclouds.provider/cloudsigma-lvs/docs/cloudsigma-lvs-1.2.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.jclouds.provider/cloudsigma-lvs/srcs/cloudsigma-lvs-1.2.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
