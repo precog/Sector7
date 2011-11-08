@@ -109,6 +109,23 @@
     <orderEntry type="library" name="ch.qos.logback_logback-core_0.9.30" level="project" />
     <orderEntry type="library" name="org.slf4j_slf4j-api_1.6.2" level="project" />
     <orderEntry type="library" name="com.weiglewilczek.slf4s_slf4s_2.9.1_1.0.7" level="project" />
+    <orderEntry type="library" name="com.reportgrid_blueeyes_2.9.1_0.5.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="se.scalablesolutions.akka_akka-actor_1.1.2" level="project" />
+    <orderEntry type="library" name="com.googlecode.concurrentlinkedhashmap_concurrentlinkedhashmap-lru_1.1" level="project" />
+    <orderEntry type="library" name="commons-codec_commons-codec_1.5" level="project" />
+    <orderEntry type="library" name="joda-time_joda-time_1.6.2" level="project" />
+    <orderEntry type="library" name="org.jboss.netty_netty_3.2.4.Final" level="project" />
+    <orderEntry type="library" name="org.mongodb_mongo-java-driver_2.6.5" level="project" />
+    <orderEntry type="library" name="se.scalablesolutions.akka_akka-typed-actor_1.1.2" level="project" />
+    <orderEntry type="library" name="org.guiceyfruit_guice-all_2.0" level="project" />
+    <orderEntry type="library" name="org.codehaus.aspectwerkz_aspectwerkz_2.2.3" level="project" />
+    <orderEntry type="library" name="se.scalablesolutions.akka_akka-stm_1.1.2" level="project" />
+    <orderEntry type="library" name="org.multiverse_multiverse-alpha_0.6.2" level="project" />
+    <orderEntry type="library" name="org.xlightweb_xlightweb_2.13.2" level="project" />
+    <orderEntry type="library" name="org.xsocket_xSocket_2.8.15" level="project" />
+    <orderEntry type="library" name="rhino_js_1.7R2" level="project" />
+    <orderEntry type="library" name="javolution_javolution_5.5.1" level="project" />
+    <orderEntry type="library" name="org.scalaz_scalaz-core_2.9.1_6.0.2" level="project" />
   </component>
 </module>
 
