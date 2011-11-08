@@ -214,6 +214,16 @@ conf=<source file>    - Adds the file symlinked to /etc/reportgrid/<service name
 jar=<source file>     - Adds the file symlinked to /usr/share/java/<service name>.jar
 EOH
   else
+    # Verify that this is really a service
+    Net::HTTP.start(server_url.host, server_url.port) do |http|
+      http.request_get("/inventory/config/#{ARGV[0]}", headers) do |response|
+        if not response.is_a? Net::HTTPOK then
+          puts "Error adding config: #{response.read_body}"
+          exit(-2)
+        end
+      end
+    end
+
     service_name = ARGV.shift
 
     # Parse the arguments into proper JSON to send
