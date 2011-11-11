@@ -248,16 +248,23 @@ EOH
 
     tag = nil
 
-    if ARGV.length > 0 and ARGV[0].start_with?("load=") then
-      key, loadFile = ARGV[0].split('=')
+    # Expand any load params to their contents
+    params = ARGV.map { |arg|
+      if arg.start_with?("load=") then
+        key, loadFile = ARGV[0].split('=')
 
-      params = File.open(loadFile) do |input|
-        input.lines.map{|l| l.strip}
+        params = File.open(File.expand_path(loadFile)) do |input|
+          input.lines.map{|l| l.strip}
+        end
+      else
+        arg
       end
-    else
-      params = ARGV
-    end
+    }.flatten
 
+    if params.length == 0 then
+      puts "Parameters are required for adding a config"
+    end
+    
     params.each do |arg|
       key, value = arg.split('=')
 
