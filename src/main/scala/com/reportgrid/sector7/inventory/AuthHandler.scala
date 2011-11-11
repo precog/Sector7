@@ -1,25 +1,35 @@
 package com.reportgrid.sector7.inventory
 
-import blueeyes.json.JsonAST._
 import blueeyes.concurrent.Future
 import blueeyes.core.service._
 import blueeyes.core.http.HttpStatusCodes._
-import blueeyes.json.xschema.DefaultSerialization._
-import blueeyes.core.http.{HttpStatus, HttpRequest, HttpResponse}
+import blueeyes.core.http.{HttpFailure, HttpRequest}
+import scalaz.{Failure, Validation}
+import net.lag.logging.Logger
+import com.reportgrid.sector7.utils.RequestUtils
 
 /**
  * Copyright 2011, ReportGrid, Inc.
  *
  * Created by dchenbecker on 11/4/11 at 2:12 PM
  */
+class AuthRequiredService[A, B](token : String, val delegate : HttpService[A, Future[B]], log : Logger)(implicit err : (HttpFailure, String) => B)
+extends DelegatingService[A, Future[B], A, Future[B]] with RequestUtils {
+  def metadata = None
 
-
-// TODO: Fix this to be a service wrapper instead of just a function generator
-object AuthHandler {
-  def apply(token : String)(f : HttpRequest[Future[JValue]] => Future[HttpResponse[JValue]]) : HttpRequest[Future[JValue]] => Future[HttpResponse[JValue]] =
-    (request : HttpRequest[Future[JValue]]) => request.headers.get("Authtoken") match {
-      case Some(sentToken) if token == sentToken => f(request)
-      case Some(_) => Future.sync(HttpResponse(HttpStatus(BadRequest, "Invalid auth token specified")))
-      case None => Future.sync(HttpResponse(HttpStatus(BadRequest, "Invalid request")))
+  val service  : HttpRequest[A] => Validation[NotServed,Future[B]] = (request : HttpRequest[A]) => {
+    request.headers.get("Authtoken") match {
+      case None => {
+        log.warning("Request without auth token from " + request.remoteHostIp)
+        Failure(DispatchError(BadRequest, "Unauthorized"))
+      }
+      case Some(headerToken) =>
+        if (headerToken == token) {
+          delegate.service(request)
+        } else {
+          log.warning("Invalid auth token from " + request.remoteHostIp)
+          Failure(DispatchError(BadRequest,"Unauthorized"))
+        }
     }
+  }
 }

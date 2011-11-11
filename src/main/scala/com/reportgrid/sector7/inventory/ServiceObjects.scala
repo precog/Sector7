@@ -55,8 +55,10 @@ case class ServiceConfig(name : String,
                          tag : Option[String] = None,
                          serial : String = TimeUtils.timestamp,
                          stable : Boolean = false,
+                         rejected : Boolean = false,
                          deployedCount : Int = 0,
                          deployingCount : Int = 0,
+                         failedCount : Int = 0,
                          preinstall : Option[ServiceFile] = None,
                          postinstall : Option[ServiceFile] = None,
                          preremove : Option[ServiceFile] = None,
@@ -73,8 +75,10 @@ trait ServiceConfigSerialization extends SerializationHelpers {
         JField("tag", config.tag.serialize),
         JField("serial", config.serial.serialize),
         JField("stable", config.stable.serialize),
+        JField("rejected", config.rejected.serialize),
         JField("deployedCount", config.deployedCount.serialize),
         JField("deployingCount", config.deployingCount.serialize),
+        JField("failedCount", config.failedCount.serialize),
         JField("preinstall", config.preinstall.serialize),
         JField("postinstall", config.postinstall.serialize),
         JField("preremove", config.preremove.serialize),
@@ -85,27 +89,31 @@ trait ServiceConfigSerialization extends SerializationHelpers {
   }
 
   implicit val  ServiceConfigExtractor : Extractor[ServiceConfig] = new Extractor[ServiceConfig] with ValidatedExtraction[ServiceConfig] {
-    override def validated(obj: JValue) : Validation[Error,ServiceConfig] = (
-        (obj \ "name").validated[String] |@|
-        (obj \ "tag").validated[Option[String]] |@|
-        (obj \ "serial").validated[String] |@|
-        (obj \ "stable").validated[Boolean] |@|
-        (obj \ "deployedCount").validated[Int] |@|
-        (obj \ "deployingCount").validated[Int] |@|
-        (obj \ "preinstall").validated[Option[ServiceFile]] |@|
-        (obj \ "postinstall").validated[Option[ServiceFile]] |@|
-        (obj \ "preremove").validated[Option[ServiceFile]] |@|
-        (obj \ "postremove").validated[Option[ServiceFile]] |@|
-        (obj \ "files").validated[List[ServiceFile]]).apply(ServiceConfig(_,_,_,_,_,_,_,_,_,_,_))
+    override def validated(obj: JValue) : Validation[Error,ServiceConfig] =
+      (obj \ "files").validated[List[ServiceFile]].flatMap { files =>
+        ((obj \ "name").validated[String] |@|
+         (obj \ "tag").validated[Option[String]] |@|
+         (obj \ "serial").validated[String] |@|
+         (obj \ "stable").validated[Boolean] |@|
+         (obj \? "rejected").getOrElse(JBool(false)).validated[Boolean] |@|
+         (obj \ "deployedCount").validated[Int] |@|
+         (obj \ "deployingCount").validated[Int] |@|
+         (obj \? "failedCount").getOrElse(JInt(0)).validated[Int] |@|
+         (obj \ "preinstall").validated[Option[ServiceFile]] |@|
+         (obj \ "postinstall").validated[Option[ServiceFile]] |@|
+         (obj \ "preremove").validated[Option[ServiceFile]] |@|
+         (obj \ "postremove").validated[Option[ServiceFile]]
+        ).apply(ServiceConfig(_,_,_,_,_,_,_,_,_,_,_,_,files))
+      }
   }
 }
 
 object ServiceConfig extends ServiceConfigSerialization
 
 
-case class Service(name : String, configs : List[ServiceConfig], rejected : List[ServiceConfig], lastRollback : Option[ServiceConfig]) {
+case class Service(name : String, configs : List[ServiceConfig], onlyHosts : List[String]) {
   def latest(onlyStable : Boolean) = {
-    val current = configs.sortBy(_.serial)
+    val current = configs.sortBy(_.serial).filter(_.failedCount == 0)
 
     (if (onlyStable) {
       current.filter(_.stable)
@@ -121,8 +129,7 @@ trait ServiceSerialization extends SerializationHelpers {
       List(
         JField("name", service.name.serialize),
         JField("configs", service.configs.serialize),
-        JField("rejected", service.rejected.serialize),
-        JField("lastRollback", service.lastRollback.serialize)
+        JField("onlyHosts", service.onlyHosts.serialize)
       ).filter(fieldHasValue)
     )
   }
@@ -131,8 +138,7 @@ trait ServiceSerialization extends SerializationHelpers {
     override def validated(obj: JValue) : Validation[Error,Service] = {
       ((obj \ "name").validated[String] |@|
        (obj \? "configs").getOrElse(JArray.empty).validated[List[ServiceConfig]] |@|
-       (obj \? "rejected").getOrElse(JArray.empty).validated[List[ServiceConfig]] |@|
-       (obj \ "lastRollback").validated[Option[ServiceConfig]]).apply(Service(_,_,_,_))
+       (obj \? "onlyHosts").getOrElse(JArray.empty).validated[List[String]]).apply(Service(_,_,_))
     }
   }
 }

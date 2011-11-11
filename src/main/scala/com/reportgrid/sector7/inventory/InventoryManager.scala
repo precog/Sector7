@@ -8,6 +8,7 @@ import blueeyes.concurrent.Future
 import scalaz.{Success, Failure, Validation}
 import blueeyes.json.JsonAST._
 import com.reportgrid.sector7.utils.TimeUtils
+import strategy.DeploymentStrategy
 
 /**
  * Copyright 2011, ReportGrid, Inc.
@@ -158,9 +159,11 @@ class InventoryManager(db : Database, controller : DeploymentStrategy, log : Log
     }
   }
 
-  def processFailure(service: String, serial: String, log: Logger) = controller.handleFailure(service, serial, log)
+  def processFailure(service: String, serial: String, hostname : String,  log: Logger) =
+    controller.handleFailure(service, serial, hostname, log)
 
-  def processSuccess(service: String, serial: String, log : Logger) = controller.handleSuccess(service, serial, log)
+  def processSuccess(service: String, serial: String, hostname : String, log : Logger) =
+    controller.handleSuccess(service, serial, hostname, log)
 
   db(ensureUniqueIndex("unique_host").on("hostname").in(HOSTS_COLL)).deliver()
   db(ensureUniqueIndex("unique_service").on("name").in(SERVICES_COLL)).deliver()
@@ -169,24 +172,20 @@ class InventoryManager(db : Database, controller : DeploymentStrategy, log : Log
   /**
    * Check the given host in, update its records, and return a list of needed upgrades
    */
-  def checkInHost(hostname: String, current: scala.List[ServiceId], onlyStable : Boolean, log : Logger) : Future[List[ServiceConfig]] = {
-    db(select().from(HOSTS_COLL).where("hostname" === hostname)).flatMap {
-      h => {
-        val entry = (h.headOption map {
-          _.deserialize[HostEntry]
-        } getOrElse {
+  def checkInHost(hostname: String, current: scala.List[ServiceId], onlyStable : Boolean, log : Logger) : Future[List[ServiceConfig]] =
+    db(selectOne().from(HOSTS_COLL).where("hostname" === hostname)).flatMap { result =>
+
+      val entry = (result.map(_.deserialize[HostEntry]).getOrElse {
           log.info("Creating new record for " + hostname)
           HostEntry(hostname, new DateTime(), Nil, Nil)
         }).copy(lastCheckin = new DateTime(), currentVersions = current)
 
-        log.debug(hostname + " updated to " + entry)
+      log.debug(hostname + " updated to " + entry)
 
-        db(upsert(HOSTS_COLL).set(new MongoUpdateObject(entry.serialize.asInstanceOf[JObject]))).flatMap {
-          ignore => controller.upgradesFor(entry, onlyStable, log)
-        }
+      db(upsert(HOSTS_COLL).set(entry.serialize --> classOf[JObject]).where("hostname" === hostname)).flatMap {
+        ignore => controller.upgradesFor(entry, onlyStable, log)
       }
     }
-  }
 
   def getServices = controller.getServices
 }

@@ -12,7 +12,9 @@ server {
 services {
   deployer {
     v1 {
-      authtoken = "feedfacedeadbeef"
+      authtoken = "JustaTest"
+      
+      deployer = "com.reportgrid.sector7.inventory.strategy.OneAtATime"
 
       log {
         level = "debug"
