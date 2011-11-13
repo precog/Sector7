@@ -1,3 +1,8 @@
+/**
+ * Copyright 2011, ReportGrid, Inc.
+ *
+ * Created by dchenbecker on 11/4/11 at 10:43 AM
+ */
 package com.reportgrid.sector7.inventory.strategy
 
 import blueeyes.json.xschema.DefaultSerialization._
@@ -7,21 +12,13 @@ import com.reportgrid.sector7.inventory.Service._
 import blueeyes.concurrent.Future
 import net.lag.logging.Logger
 import com.reportgrid.sector7.inventory._
-import scalaz.Success._
 import blueeyes.json.JsonAST.JObject
-import scalaz.Failure._
 import scalaz.{Failure, Success, Validation}
-
-/**
- * Copyright 2011, ReportGrid, Inc.
- *
- * Created by dchenbecker on 11/4/11 at 10:43 AM
- */
 
 abstract class DeploymentStrategy(db : Database) {
   import InventoryManager.SERVICES_COLL
 
-  def upgradesFor(host : HostEntry, onlyStable : Boolean, log : Logger) : Future[List[ServiceConfig]]
+  def upgradesFor(host : HostEntry, onlyStable : Boolean, log : Logger) : Future[Validation[String,List[ServiceConfig]]]
 
   def handleSuccess(service : String, serial : String, hostname : String, log : Logger) :  Future[Validation[String,String]] = {
     log.info("Success reported from %s for %s-%s".format(hostname, service,serial))
@@ -46,7 +43,7 @@ abstract class DeploymentStrategy(db : Database) {
    * Computes which services need updates based on the given host. Filters against host restrictions
    * on the service itself, as well as pinned versions on the host.
    */
-  protected def outOfDateServicesFor(host: HostEntry, log: Logger, onlyStable: Boolean): Future[List[ServiceConfig]] =
+  protected def outOfDateServicesFor(host: HostEntry, onlyStable: Boolean, log: Logger): Future[List[ServiceConfig]] =
     getServices.map { currentServices =>
       val hostCurrent = host.currentVersions.map(s => (s.name, s.serial)).toMap
 

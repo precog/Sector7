@@ -57,7 +57,7 @@ case class ServiceConfig(name : String,
                          stable : Boolean = false,
                          rejected : Boolean = false,
                          deployedCount : Int = 0,
-                         deployingCount : Int = 0,
+                         deployingCount : Int = 0, // TODO: This should be a list of hosts in case a host hangs up or restarts in the middle of an upgrade
                          failedCount : Int = 0,
                          preinstall : Option[ServiceFile] = None,
                          postinstall : Option[ServiceFile] = None,
@@ -110,10 +110,9 @@ trait ServiceConfigSerialization extends SerializationHelpers {
 
 object ServiceConfig extends ServiceConfigSerialization
 
-
-case class Service(name : String, configs : List[ServiceConfig], onlyHosts : List[String]) {
+case class Service(name : String, configs : List[ServiceConfig] = Nil, onlyHosts : List[String] = Nil) {
   def latest(onlyStable : Boolean) = {
-    val current = configs.sortBy(_.serial).filter(_.failedCount == 0)
+    val current = configs.sortBy(_.serial).filter(!_.rejected)
 
     (if (onlyStable) {
       current.filter(_.stable)
