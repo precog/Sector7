@@ -183,7 +183,7 @@ case command.downcase
 
               if running_hosts.length > 0 then
                 puts "    Running hosts:"
-                puts running_hosts.map{|h| "      #{h}\n" }
+                puts running_hosts.sort{|a,b| a <=> b}.map{|h| "      #{h}\n" }
               end
 
               puts ""
