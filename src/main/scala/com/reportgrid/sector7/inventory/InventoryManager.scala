@@ -35,6 +35,7 @@ case class DeleteConfig(service : String, serial : String) extends InventoryMess
 case class ProcessSuccessfulDeploy(service : String, serial : String, host : String) extends InventoryMessage[String]
 case class ProcessFailedDeploy(service : String, serial : String, host : String) extends InventoryMessage[String]
 case class CheckInHost(host : String, current : JArray, onlyStable : Boolean) extends InventoryMessage[List[ServiceConfig]]
+case object GetHosts extends InventoryMessage[List[HostEntry]]
 
 class InventoryManager(db : Database, controller : DeploymentStrategy, log : Logger) extends Actor {
   import InventoryManager._
@@ -57,6 +58,7 @@ class InventoryManager(db : Database, controller : DeploymentStrategy, log : Log
     case ProcessSuccessfulDeploy(service,serial,host) => self.reply_?(processSuccess(service,serial,host))
     case ProcessFailedDeploy(service,serial,host) => self.reply_?(processFailure(service,serial,host))
     case CheckInHost(host,current,onlyStable) => self.reply_?(checkInHost(host,current.deserialize[List[ServiceId]],onlyStable))
+    case GetHosts => self.reply_?(getHosts())
   }
 
   private def addService(name: String) : ReturnsA[Service] = {
@@ -163,6 +165,9 @@ class InventoryManager(db : Database, controller : DeploymentStrategy, log : Log
 
     update
   }
+
+  def getHosts() : ReturnsA[List[HostEntry]] =
+    db(selectAll.from(HOSTS_COLL)).map(data => Success(data.map(_.deserialize[HostEntry]).toList))
 
   /**
    * New configs are applied as a delta against the current latest config. Files are replaced

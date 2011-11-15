@@ -82,21 +82,28 @@ trait DeploymentServices extends BlueEyesServiceBuilder with RequestUtils {
                     process(GetServices) { services => HttpResponse(OK, content = Some(services)) }
                   }
                 } ~
-                path("host/'hostname") {
-                  post { req : HttpRequest[Future[JValue]] =>
-                    req.content.map(_.flatMap { data =>
-                      log.info("Checkin from " + req.parameters('hostname))
+                path("host/") {
+                  path ("'hostname") {
+                    post { req : HttpRequest[Future[JValue]] =>
+                      req.content.map(_.flatMap { data =>
+                        log.info("Checkin from " + req.parameters('hostname))
 
-                      // Default to only stable configs unless explicitly requested
-                      val onlyStable = (data \ "onlyStable").deserialize[Option[Boolean]].getOrElse(true)
-                      val currentEntries = (data \ "current").deserialize[List[ServiceId]]
+                        // Default to only stable configs unless explicitly requested
+                        val onlyStable = (data \ "onlyStable").deserialize[Option[Boolean]].getOrElse(true)
+                        val currentEntries = (data \ "current").deserialize[List[ServiceId]]
 
-                      process(CheckInHost(req.parameters('hostname), currentEntries, onlyStable)) {
-                        updates => HttpResponse[JValue](content = Some(updates))
+                        process(CheckInHost(req.parameters('hostname), currentEntries, onlyStable)) {
+                          updates => HttpResponse[JValue](content = Some(updates))
+                        }
+                      }).getOrElse {
+                        log.warning("Invalid/missing post data on checkin from " + req.parameters('hostname))
+                        Future.sync(HttpResponse[JValue](HttpStatus(BadRequest, "Invalid/missing post data")))
                       }
-                    }).getOrElse {
-                      log.warning("Invalid/missing post data on checkin from " + req.parameters('hostname))
-                      Future.sync(HttpResponse[JValue](HttpStatus(BadRequest, "Invalid/missing post data")))
+                    }
+                  } ~
+                  get { req : HttpRequest[Future[JValue]] =>
+                    process(GetHosts) {
+                      results => HttpResponse(content = Some(results))
                     }
                   }
                 } ~

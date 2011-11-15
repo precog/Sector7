@@ -4,7 +4,7 @@ name := "sector7"
 
 organization := "com.reportgrid"
 
-version := "0.1.2"
+version := "0.1.3"
 
 scalaVersion := "2.9.1"
 
