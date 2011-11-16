@@ -99,10 +99,10 @@ class InventoryManager(db : Database, controller : DeploymentStrategy, log : Log
   }
 
   private def modConfig(serviceName: String, serial: String, data : JObject) : ReturnsA[Unit] = {
-    (data \ "stable").deserialize[Option[Boolean]] match {
-      case Some(stable) => {
-        log.info("Setting %s-%s to stable".format(serviceName, serial))
-        db(updateMany(SERVICES_COLL).set(MongoUpdateBuilder("configs.$.stable").set(stable)).where("configs.name" === serviceName & "configs.serial" === serial)).map(_ => Success(()))
+    (data \ "rejected").deserialize[Option[Boolean]] match {
+      case Some(rejected) => {
+        log.info("Setting %s-%s to rejected = %s".format(serviceName, serial, rejected))
+        db(updateMany(SERVICES_COLL).set(MongoUpdateBuilder("configs.$.rejected").set(rejected)).where("configs.name" === serviceName & "configs.serial" === serial)).map(_ => Success(()))
       }
       case None => Future.sync(Success(()))
     }

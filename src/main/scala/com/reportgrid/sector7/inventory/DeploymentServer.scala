@@ -143,8 +143,9 @@ trait DeploymentServices extends BlueEyesServiceBuilder with RequestUtils {
 
                     req.content.map(_.flatMap { data =>
                       process(AddConfig(req.parameters('name), data --> classOf[JObject])) { serviceConfig =>
-                        log.info("%s added config %s".format(req.remoteHostIp, serviceConfig.name + "-" + serviceConfig.latest(false).map(_.serial).get))
-                        HttpResponse[JValue](OK)
+                        val latestSerial = serviceConfig.latest(false).map(_.serial).get
+                        log.info("%s added config %s".format(req.remoteHostIp, serviceConfig.name + "-" + latestSerial))
+                        HttpResponse[JValue](OK, content = Some(Map("serial" -> latestSerial).serialize))
                       }
                     }).getOrElse(Future.sync(HttpResponse[JValue](BadRequest)))
                   } ~
