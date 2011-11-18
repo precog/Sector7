@@ -327,19 +327,16 @@ EOH
         exit
       end
 
-      exit
-
       # Upload files and transform results
       log.info("Uploading hooks")
       if not hooksMatch then
         hooks = newHooks.map { |k,v| [k,uploader.upload(v)] }
+        # Place the updated hooks into the config object
+        hooks.each do |key,value| config[key] = value end
       end
 
       log.info("Uploading files")
       config["files"] = newFiles.map { |f| uploader.upload(f) }
-
-      # Place the updated hooks into the config object
-      hooks.each do |key,value| config[key] = value end
 
       puts "\n\n#{ JSON.pretty_generate(config) }\n\n"
 
