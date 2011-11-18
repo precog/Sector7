@@ -31,8 +31,10 @@ abstract class DeploymentStrategy(db : Database) {
     }
   }
 
-  def handleFailure(service : String, serial : String, hostname : String,  log : Logger) : Future[Validation[String,String]] =
+  def handleFailure(service : String, serial : String, hostname : String,  log : Logger) : Future[Validation[String,String]] = {
+    log.warning("Failured on %s-%s reported by %s".format(service, serial, hostname))
     failConfig(service, serial, _.deployedCount == 0, hostname, log)
+  }
 
   def getServices : Future[List[Service]] =
     this.db(select().from(SERVICES_COLL)).map {
