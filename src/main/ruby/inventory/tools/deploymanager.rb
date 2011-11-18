@@ -224,6 +224,7 @@ EOH
 
       if params.length == 0 then
         puts "Parameters are required for adding a config"
+        exit
       end
 
       params.each do |arg|
@@ -323,7 +324,9 @@ EOH
 
       # Upload files and transform results
       log.info("Uploading files")
-      hooks = hooks.map { |k,v| [k,uploader.upload(v)] }
+      if not hooksMatch then
+        hooks = hooks.map { |k,v| [k,uploader.upload(v)] }
+      end
       config["files"] = config["files"].map { |f| uploader.upload(f) }
 
       hooks.each do |key,value| config[key] = value end
@@ -338,7 +341,7 @@ EOH
             puts "Failed to add service: #{response.read_body} (#{response.message})"
           else
             result = JSON.parse(response.read_body)
-            puts "Added config for service #{service_name} :#{result["serial"]}"
+            puts "Added config for service #{service_name}\nserial=#{result["serial"]}"
           end
         end
       end
