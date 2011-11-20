@@ -2,7 +2,7 @@ import AssemblyKeys._
 
 name := "deployment"
 
-version := "0.1.3"
+version := "0.2.0"
 
 libraryDependencies ++= commonDeps ++ Seq(
   "org.jclouds" % "jclouds-all" % "1.2.1",

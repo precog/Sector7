@@ -56,9 +56,9 @@ case class ServiceConfig(name : String,
                          serial : String = TimeUtils.timestamp,
                          stable : Boolean = false,
                          rejected : Boolean = false,
-                         deployedCount : Int = 0,
-                         deployingCount : Int = 0, // TODO: This should be a list of hosts in case a host hangs up or restarts in the middle of an upgrade
-                         failedCount : Int = 0,
+                         deployed : Set[String] = Set(), // A set of hosts where this has deployed
+                         deploying : Set[String] = Set(), // A set of hosts where this is currently deploying
+                         failed : Set[String] = Set(), // A set of hosts where deployment failed
                          preinstall : Option[ServiceFile] = None,
                          postinstall : Option[ServiceFile] = None,
                          preremove : Option[ServiceFile] = None,
@@ -76,9 +76,9 @@ trait ServiceConfigSerialization extends SerializationHelpers {
         JField("serial", config.serial.serialize),
         JField("stable", config.stable.serialize),
         JField("rejected", config.rejected.serialize),
-        JField("deployedCount", config.deployedCount.serialize),
-        JField("deployingCount", config.deployingCount.serialize),
-        JField("failedCount", config.failedCount.serialize),
+        JField("deployed", config.deployed.serialize),
+        JField("deploying", config.deploying.serialize),
+        JField("failed", config.failed.serialize),
         JField("preinstall", config.preinstall.serialize),
         JField("postinstall", config.postinstall.serialize),
         JField("preremove", config.preremove.serialize),
@@ -96,9 +96,9 @@ trait ServiceConfigSerialization extends SerializationHelpers {
          (obj \ "serial").validated[String] |@|
          (obj \ "stable").validated[Boolean] |@|
          (obj \? "rejected").getOrElse(JBool(false)).validated[Boolean] |@|
-         (obj \ "deployedCount").validated[Int] |@|
-         (obj \ "deployingCount").validated[Int] |@|
-         (obj \? "failedCount").getOrElse(JInt(0)).validated[Int] |@|
+         (obj \? "deployed").getOrElse(JArray.empty).validated[Set[String]] |@|
+         (obj \? "deploying").getOrElse(JArray.empty).validated[Set[String]] |@|
+         (obj \? "failed").getOrElse(JArray.empty).validated[Set[String]] |@|
          (obj \ "preinstall").validated[Option[ServiceFile]] |@|
          (obj \ "postinstall").validated[Option[ServiceFile]] |@|
          (obj \ "preremove").validated[Option[ServiceFile]] |@|

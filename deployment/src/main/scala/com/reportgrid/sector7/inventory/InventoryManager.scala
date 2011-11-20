@@ -39,12 +39,12 @@ case object GetHosts extends InventoryMessage[List[HostEntry]]
 
 class InventoryManager(db : Database, controller : DeploymentStrategy, log : Logger) extends Actor {
   import InventoryManager._
-
   // Make a shortcut for our function return types
   type ReturnsA[T] = Future[Validation[String, T]]
 
   db(ensureUniqueIndex("unique_host").on("hostname").in(HOSTS_COLL)).deliver()
-  db(ensureUniqueIndex("unique_service").on("name").in(SERVICES_COLL)).deliver()
+  db(ensureUniqueIndex("unique_service").
+on("name").in(SERVICES_COLL)).deliver()
   db(ensureUniqueIndex("unique_config").on("configs.name", "configs.serial").in(SERVICES_COLL)).deliver()
 
 
@@ -152,11 +152,9 @@ class InventoryManager(db : Database, controller : DeploymentStrategy, log : Log
 
       log.debug(hostname + " updated to " + entry)
 
-      val updateList = db(upsert(HOSTS_COLL).set(entry.serialize --> classOf[JObject]).where("hostname" === hostname)).flatMap {
+      db(upsert(HOSTS_COLL).set(entry.serialize --> classOf[JObject]).where("hostname" === hostname)).flatMap {
         ignore => controller.upgradesFor(entry, onlyStable, log)
       }
-
-      updateList
     }.deliverTo(_ => latch.countDown())
 
     latch.await()
@@ -191,7 +189,9 @@ class InventoryManager(db : Database, controller : DeploymentStrategy, log : Log
    */
   private def applyConfigDelta(service: Service, config: JObject) : Validation[String, Service] = {
     val timestamp = TimeUtils.timestamp
-    var newConfig = (service.latest(false) getOrElse ServiceConfig(service.name)).copy(serial = timestamp, stable = false, deployedCount = 0, deployingCount = 0)
+    var newConfig =
+      (service.latest(false) getOrElse ServiceConfig(service.name)).copy(
+        serial = timestamp, stable = false, deployed = Set(), deploying = Set(), failed = Set() )
 
     val fields = config.fields.map (f => (f.name, f.value)).toMap
 

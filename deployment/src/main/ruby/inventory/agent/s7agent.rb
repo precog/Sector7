@@ -89,8 +89,8 @@ Mail.defaults do
 end
 
 # To avoid chef immediately restarting us from having an impact
-log.info("Pausing for one minute on startup")
-sleep 60
+log.info("Pausing for 15 seconds on startup")
+sleep 15
 
 while (true)
   begin

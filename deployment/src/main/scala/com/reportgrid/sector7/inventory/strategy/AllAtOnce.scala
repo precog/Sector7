@@ -20,7 +20,7 @@ class AllAtOnce(db : Database) extends DeploymentStrategy(db) {
       // All we do for AllAtOnce is increment deploying and let 'er rip
       Success(upgrades.map {
         config => {
-          addDeploying(config.name, config.serial).deliver()
+          addDeploying(config.name, config.serial, host.hostname)
           config
         }
       })

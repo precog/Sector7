@@ -19,15 +19,15 @@ class OneAtATime(db : Database) extends DeploymentStrategy(db) {
   type Result = Future[Validation[String, List[ServiceConfig]]]
   def upgradesFor(host: HostEntry, onlyStable: Boolean, log: Logger) : Result =
     outOfDateServicesFor(host, onlyStable, log).map { upgrades =>
-      // For each candidate, check to see if someone is already deploying. If so, we skip on this round
+      // For each candidate, check to see if someone else is already deploying. If so, we skip on this round
       Success(upgrades.flatMap { config =>
-        if (config.deployingCount > 0) {
-          log.info("Skipping upgrade on %s-%s. Already deploying".format(config.name, config.serial))
+        if (config.deploying.size > 0 && ! config.deploying.contains(host.hostname)) {
+          log.info("Skipping upgrade on %s-%s. Already deploying to %s".format(config.name, config.serial, config.deploying.mkString(", ")))
           None
         } else {
           log.info("Upgrading %s to %s-%s".format(host.hostname, config.name, config.serial))
-          addDeploying(config.name, config.serial)
-          Some(config)
+          addDeploying(config.name, config.serial, host.hostname)
+          Some(config) // TODO: Technically we probably want to return the updated config
         }
       })
     }
