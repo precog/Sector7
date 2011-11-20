@@ -1,7 +1,9 @@
 *~
 target/
-lib/
+./lib/
 
 # Ignore IDEA user-specific files
 workspace.xml
 tasks.xml
+.idea/
+.idea_modules/
