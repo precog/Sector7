@@ -20,7 +20,7 @@ object AddAppServer extends ConfigValidator with Logging {
 
     // Setup our template and boot
     val template = DefaultTemplates.AppServer(client)
-    val steps = List(DefaultSteps.fixDns, DefaultSteps.chefBoot(env, Some("role[base]")))
+    val steps = List(DefaultSteps.fixDns, DefaultSteps.chefBoot(env, config.getString(serverType + ".roles") orElse Some("role[base]")))
 
     Provisioner.provision(fqdns.map(BuildRequest(_, template, steps)).toList, client).foreach { result =>
       logger.info("Setup of %s (%s) ".format(result.name, result.node.getId) + (result.failures match {
