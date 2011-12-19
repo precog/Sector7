@@ -19,7 +19,7 @@ object DefaultSteps extends Logging {
   
   val fixDns = BuildStep("Fix DNS", { (fqdn, node, client) =>
     val serial = timestamp
-    val hostname = fqdn.split('.').last
+    val hostname = fqdn.split('.').head
 
     node.getPublicAddresses.asScala.headOption.map { mainPublicIP =>
       val script = "mv /etc/hostname /etc/hostname." + serial + " && echo " + hostname + " > /etc/hostname && " +
