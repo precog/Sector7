@@ -5,7 +5,7 @@ import blueeyes.core.service._
 import blueeyes.core.http.HttpStatusCodes._
 import blueeyes.core.http.{HttpFailure, HttpRequest}
 import scalaz.{Failure, Validation}
-import net.lag.logging.Logger
+import com.weiglewilczek.slf4s.Logger
 import com.reportgrid.sector7.utils.RequestUtils
 
 /**
@@ -20,14 +20,14 @@ extends DelegatingService[A, Future[B], A, Future[B]] with RequestUtils {
   val service  : HttpRequest[A] => Validation[NotServed,Future[B]] = (request : HttpRequest[A]) => {
     request.headers.get("Authtoken") match {
       case None => {
-        log.warning("Request without auth token from " + request.remoteHostIp)
+        log.warn("Request without auth token from " + request.remoteHostIp)
         Failure(DispatchError(BadRequest, "Unauthorized"))
       }
       case Some(headerToken) =>
         if (headerToken == token) {
           delegate.service(request)
         } else {
-          log.warning("Invalid auth token from " + request.remoteHostIp)
+          log.warn("Invalid auth token from " + request.remoteHostIp)
           Failure(DispatchError(BadRequest,"Unauthorized"))
         }
     }

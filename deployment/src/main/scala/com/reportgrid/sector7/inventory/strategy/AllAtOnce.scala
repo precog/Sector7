@@ -8,7 +8,7 @@ package com.reportgrid.sector7.inventory.strategy
 import blueeyes.persistence.mongo._
 import com.reportgrid.sector7.inventory._
 import blueeyes.concurrent.Future
-import net.lag.logging.Logger
+import com.weiglewilczek.slf4s.Logger
 import scalaz.{Validation, Success}
 
 /**

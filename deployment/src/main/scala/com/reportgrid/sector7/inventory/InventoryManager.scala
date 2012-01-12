@@ -2,13 +2,13 @@ package com.reportgrid.sector7.inventory
 
 import blueeyes.persistence.mongo._
 import blueeyes.json.xschema.DefaultSerialization._
-import net.lag.logging.Logger
 import org.joda.time.DateTime
 import blueeyes.concurrent.Future
 import blueeyes.json.JsonAST._
 import com.reportgrid.sector7.utils.TimeUtils
 import strategy.DeploymentStrategy
 import akka.actor.Actor
+import com.weiglewilczek.slf4s.Logger
 
 import scalaz._
 import Scalaz._

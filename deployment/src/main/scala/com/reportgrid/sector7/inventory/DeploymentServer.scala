@@ -36,6 +36,8 @@ case class InventoryState(manager : ActorRef, authtoken : String)
 trait DeploymentServices extends BlueEyesServiceBuilder with RequestUtils {
   val INVENTORY_CONFIG = "inventorydb"
 
+  implicit val AkkaTimeout = Timeout(Long.MaxValue)
+
   val inventoryService = service("deployer", "1.0") {
     logging { log =>
       healthMonitor { monitor => context =>
@@ -67,8 +69,8 @@ trait DeploymentServices extends BlueEyesServiceBuilder with RequestUtils {
 
           // Define a little utility method to handle the messy side of types, actors and futures
           def process[T](message : InventoryMessage[T])(handler : T => HttpResponse[JValue]) : Future[HttpResponse[JValue]]  =
-            (state.manager.!!![Future[Validation[String,T]]](message)).toBlueEyes.flatMap { _.map {
-              case Success(result) => handler(result)
+            (state.manager.?(message)).toBlueEyes.flatMap { _.asInstanceOf[Future[Validation[String, T]]].map {
+              case Success(result) => handler(result : T)
               case Failure(error) => HttpResponse(BadRequest, content = Some(error))
             }}
 
@@ -96,7 +98,7 @@ trait DeploymentServices extends BlueEyesServiceBuilder with RequestUtils {
                           updates => HttpResponse[JValue](content = Some(updates))
                         }
                       }).getOrElse {
-                        log.warning("Invalid/missing post data on checkin from " + req.parameters('hostname))
+                        log.warn("Invalid/missing post data on checkin from " + req.parameters('hostname))
                         Future.sync(HttpResponse[JValue](HttpStatus(BadRequest, "Invalid/missing post data")))
                       }
                     }

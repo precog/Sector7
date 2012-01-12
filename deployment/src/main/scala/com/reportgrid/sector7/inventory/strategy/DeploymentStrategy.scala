@@ -10,7 +10,7 @@ import blueeyes.persistence.mongo._
 
 import com.reportgrid.sector7.inventory.Service._
 import blueeyes.concurrent.Future
-import net.lag.logging.Logger
+import com.weiglewilczek.slf4s.Logger
 import com.reportgrid.sector7.inventory._
 import blueeyes.json.JsonAST.JObject
 import scalaz.{Failure, Success, Validation}
@@ -35,7 +35,7 @@ abstract class DeploymentStrategy(db : Database) {
   }
 
   def handleFailure(service : String, serial : String, hostname : String,  log : Logger) : Future[Validation[String,String]] = {
-    log.warning("Failure on %s-%s reported by %s".format(service, serial, hostname))
+    log.warn("Failure on %s-%s reported by %s".format(service, serial, hostname))
     // TODO: For now we only reject a configuration if it hasn't deployed anywhere and it's failed more than once
     val condition = { config : ServiceConfig => config.deployed.size == 0 && config.failed.size > 1}
     failConfig(service, serial, condition, hostname, log)
@@ -74,7 +74,7 @@ abstract class DeploymentStrategy(db : Database) {
           conf match {
             case Some(upgrade) if hostIsCurrent && ! upgrade.deployed.contains(host.hostname) => {
               // The host reports it's deployed, but the service doesn't show it. We need to update
-              log.warning("Updating missing deployment of %s on %s".format(upgrade.id, host.hostname))
+              log.warn("Updating missing deployment of %s on %s".format(upgrade.id, host.hostname))
               handleSuccess(upgrade.name, upgrade.serial, host.hostname, log)
               None
             }
@@ -107,10 +107,10 @@ abstract class DeploymentStrategy(db : Database) {
       val newConfig = config.copy(deploying = (config.deploying - hostname), failed = (config.failed + hostname))
 
       if (shouldReject(newConfig)) {
-        log.warning("Failed deploy on %s for %s-%s. Rejecting".format(hostname, service, serial))
+        log.warn("Failed deploy on %s for %s-%s. Rejecting".format(hostname, service, serial))
         newConfig.copy(rejected = true)
       } else {
-        log.warning("Failed deploy on %s for %s-%s, but reject condition is false".format(hostname, service, serial))
+        log.warn("Failed deploy on %s for %s-%s, but reject condition is false".format(hostname, service, serial))
         newConfig
       }
     }, "Configuration failure processed")
