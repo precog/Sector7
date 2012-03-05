@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableSet
 import com.google.inject.Module
 import org.jclouds.ssh.jsch.config.JschSshClientModule
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule
+import org.jclouds.loadbalancer.LoadBalancerServiceContextFactory
 
 /**
  * Copyright 2011, ReportGrid, Inc.
@@ -24,12 +25,19 @@ object JCloudsFactory extends ConfigValidator {
          StringParameter(USER_KEY, true, Some("The user account for API access to the provider")),
          StringParameter(APIKEY_KEY, true, Some("The key for API access to the provider")))
 
-  def contextForProvider(conf : Config) = {
-    val options = ImmutableSet.of[Module](new JschSshClientModule, new SLF4JLoggingModule)
-
+  val options = ImmutableSet.of[Module](new JschSshClientModule, new SLF4JLoggingModule)
+  
+  def computeContextForProvider(conf : Config) = {
     (new ComputeServiceContextFactory).createContext(conf.getString(PROVIDER_KEY).get,
                                                      conf.getString(USER_KEY).get,
                                                      conf.getString(APIKEY_KEY).get,
                                                      options)
+  }
+  
+  def lbContextForProvider(conf : Config) = {
+    (new LoadBalancerServiceContextFactory).createContext(conf.getString(PROVIDER_KEY).get,
+                                                          conf.getString(USER_KEY).get,
+                                                          conf.getString(APIKEY_KEY).get,
+                                                          options)
   }
 }

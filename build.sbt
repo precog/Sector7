@@ -13,8 +13,14 @@ resolvers ++= Seq(
   "Scala Tools" at "http://scala-tools.org/repo-snapshots/",
   "JBoss"       at "http://repository.jboss.org/nexus/content/groups/public/",
   "Akka"        at "http://akka.io/repository/",
-  "GuiceyFruit" at "http://guiceyfruit.googlecode.com/svn/repo/releases/"
+  "GuiceyFruit" at "http://guiceyfruit.googlecode.com/svn/repo/releases/",
+  "ReportGrid repo"          at   "http://nexus.reportgrid.com/content/repositories/releases",
+  "ReportGrid repo (public)" at   "http://nexus.reportgrid.com/content/repositories/public-releases",
+  "ReportGrid snapshot repo"          at   "http://nexus.reportgrid.com/content/repositories/snapshots",
+  "ReportGrid snapshot repo (public)" at   "http://nexus.reportgrid.com/content/repositories/public-snapshots"
 )
+
+credentials += Credentials(Path.userHome / ".ivy2" / ".rgcredentials")
 
 libraryDependencies ++= Seq(
   "org.jclouds" % "jclouds-all" % "1.2.1",

@@ -10,16 +10,29 @@ import java.io.{FileWriter, File}
 
 
 object FileUtils {
-  def writeTempFile(prefix : String, data : String) : File = {
-    val tempFile = File.createTempFile(prefix, "tmp")
+  def writeTempFile(prefix : String, data : String, suffix : Option[String] = None) : File = {
+    val tempFile = File.createTempFile(prefix, suffix.getOrElse("tmp"))
 
     val output = new FileWriter(tempFile)
 
-    output.write(data)
-    output.close()
+    try {
+      output.write(data)
+    } finally {
+      output.close()
+    }
 
     tempFile.deleteOnExit()
 
     tempFile
+  }
+
+  def readFile(filename : String, encoding : String = "UTF-8") : String = {
+    val input = scala.io.Source.fromFile(filename, encoding)
+
+    try {
+      input.getLines().mkString("\n")
+    } finally {
+      input.close()
+    }
   }
 }

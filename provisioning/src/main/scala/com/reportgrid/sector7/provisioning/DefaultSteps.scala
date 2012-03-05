@@ -21,6 +21,8 @@ object DefaultSteps extends Logging {
     val serial = timestamp
     val hostname = fqdn.split('.').head
 
+    logger.info("Fixing DNS for " + fqdn)
+
     node.getPublicAddresses.asScala.headOption.map { mainPublicIP =>
       val script = "mv /etc/hostname /etc/hostname." + serial + " && echo " + hostname + " > /etc/hostname && " +
       "mv /etc/hosts /etc/hosts." + serial + " && " +
@@ -34,6 +36,7 @@ object DefaultSteps extends Logging {
         logger.error("DNS run failed: " + result.getOutput)
         false
       } else {
+        logger.info("DNS fix complete on " + fqdn)
         true
       }
     }.getOrElse {
@@ -41,6 +44,38 @@ object DefaultSteps extends Logging {
       false
     }
   })
+
+  val runAptUpdates = BuildStep("Run APT updates", { (fqdn, node, client) =>
+    logger.info("Running APT updates on " + fqdn)
+
+    val script = "sudo aptitude update && sudo aptitude -y safe-upgrade"
+    
+    val result = client.runScriptOnNode(node.getId, script)
+    
+    if (result.getExitCode != 0) {
+      logger.error("APT update failed: " + result.getOutput)
+      false
+    } else {
+      logger.info("APT update complete on " + fqdn)
+      true
+    }
+  })
+
+  private def procLogger = new ProcessLogger {
+    private var count = 0
+    def err(s: => String) { logger.error(s) }
+
+    def out(s: => String) {
+      count +=1
+      if (count % 100 == 0) {
+        logger.info(s)
+      } else {
+        logger.trace(s)
+      }
+    }
+
+    def buffer[T](f: => T) = f
+  }
 
   def chefBoot(environment : String, roles : Option[String]) = BuildStep("Boot chef",
     { (fqdn, node, client) =>
@@ -54,9 +89,24 @@ object DefaultSteps extends Logging {
           "-P " + credential
         }
 
+        logger.info("Pausing on bootstrap attempt on " + fqdn)
+        Thread.sleep(60000)
+
         // Bootstrap chef
-        val cmd = "knife bootstrap %s -N %s -x %s %s -E %s -r %s".format(mainPublicIP, fqdn, identity, authParams, environment, roles.getOrElse("role[base]"))
-        cmd.!(ProcessLogger(println(_))) == 0
+        logger.info("Bootstrapping " + fqdn)
+                                                      
+        var rc = 100 // Badness
+        while (rc != 0) {
+          val cmd = "knife bootstrap %s -N %s -x %s %s -E %s -r %s --sudo".format(mainPublicIP, fqdn, identity, authParams, environment, roles.getOrElse("role[base]"))
+          logger.info("Making bootstrap run: " + cmd)
+          rc = cmd.!(procLogger)
+          if (rc != 100) {
+            logger.info("Completed bootstrap on %s : %d".format(fqdn, rc))
+          } else { 
+            logger.info("Going to try chef again in 15s on " + fqdn); Thread.sleep(15000)
+          }
+        }
+        rc == 0
       }.getOrElse {
         logger.error("Node %s doesn't have a public IP!".format(node.getId))
         false

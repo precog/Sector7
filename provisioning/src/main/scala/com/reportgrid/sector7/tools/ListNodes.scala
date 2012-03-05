@@ -21,7 +21,7 @@ object ListNodes {
 
     Configgy.configure(args(0))
 
-    val context = JCloudsFactory.contextForProvider(Configgy.config)
+    val context = JCloudsFactory.computeContextForProvider(Configgy.config)
 
     context.getComputeService.listNodes.asScala.foreach{ node => println(node.getName) }
 

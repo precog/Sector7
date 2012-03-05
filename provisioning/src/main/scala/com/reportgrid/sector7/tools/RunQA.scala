@@ -9,12 +9,14 @@ import net.lag.configgy.{Configgy, Config}
 import com.reportgrid.sector7.utils.{ConfigValidator, Parameter, JCloudsFactory}
 import com.weiglewilczek.slf4s.Logging
 import com.reportgrid.sector7.provisioning._
+import java.util.concurrent.Executors
 
 object RunQA extends ConfigValidator with Logging {
+  val executor = Executors.newFixedThreadPool(4)
   val parameters = List()
 
   def runQAEnv(config: Config) {
-    val context = JCloudsFactory.contextForProvider(config)
+    val context = JCloudsFactory.computeContextForProvider(config)
     val client = context.getComputeService
 
     // Setup our template and boot
@@ -38,7 +40,7 @@ object RunQA extends ConfigValidator with Logging {
       )
     ) ++ attackerHostnames.map(BuildRequest(_,DefaultTemplates.fromConfig(client,config,"attacker"),attackerSteps))
 
-    Provisioner.provision(requests, client).foreach { result =>
+    Provisioner.provision(requests, client, executor).foreach { result =>
       logger.info("Setup of %s (%s) ".format(result.name, result.node.getId) + (result.failures match {
         case Nil => "succeeded"
         case failures => "failed: " + failures.map(_.name).mkString(", ")
