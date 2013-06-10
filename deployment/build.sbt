@@ -4,8 +4,10 @@ name := "deployment"
 
 version := "0.2.0"
 
-resolvers ++= Seq("ReportGrid repo" at            "http://nexus.reportgrid.com/content/repositories/releases",
-                  "ReportGrid snapshot repo" at   "http://nexus.reportgrid.com/content/repositories/snapshots")
+resolvers ++= Seq("ReportGrid repo" at                "http://nexus.reportgrid.com/content/repositories/releases",
+                  "ReportGrid snapshot repo" at       "http://nexus.reportgrid.com/content/repositories/snapshots",
+		  "Akka Maven Repository" at          "http://repo.akka.io/releases",
+		  "GuiceyFruit Release Repository" at "http://guiceyfruit.googlecode.com/svn/repo/releases")
 
 credentials += Credentials(Path.userHome / ".ivy2" / ".rgcredentials")
 
